@@ -4,10 +4,6 @@ import { Svg, Defs, RadialGradient, Stop, Rect, SvgXml } from "react-native-svg"
 import TextField from "../components/ui/TextField";
 import { PrimaryButton } from "../components/ui/PrimaryButton";
 
-interface LoginScreenProps {
-  onNavigateToRegister: () => void;
-}
-
 const backgroundTopLeft = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="291" height="272" viewBox="0 0 291 272" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_2846_14172)">
@@ -42,14 +38,19 @@ const backgroundBottomRight = `<?xml version="1.0" encoding="UTF-8"?>
 </defs>
 </svg>`;
 
-export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
+interface RegisterScreenProps {
+  onNavigateToLogin: () => void;
+}
+
+export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [ccir, setCcir] = useState("");
   const passwordInputRef = useRef<TextInput>(null);
+  const ccirInputRef = useRef<TextInput>(null);
 
-  const handleLogin = () => {
-    // Aqui você pode adicionar a lógica de login ou mock de autenticação.
-    console.log("Login realizado", { email, password });
+  const handleRegister = () => {
+    console.log("Cadastro realizado", { email, password, ccir });
   };
 
   return (
@@ -88,37 +89,46 @@ export default function LoginScreen({ onNavigateToRegister }: LoginScreenProps) 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <Text className="font-title text-white text-5xl uppercase mb-12 tracking-wide text-center">
-          LOGIN
+          CADASTRE-SE
         </Text>
 
-      <TextField
-        label="Email"
-        placeholder="Digite aqui seu email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={email}
-        onChangeText={setEmail}
-        returnKeyType="next"
-        onSubmitEditing={() => passwordInputRef.current?.focus()}
-      />
+        <TextField
+          label="Email"
+          placeholder="Digite aqui seu email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
+        />
 
-      <TextField
-        ref={passwordInputRef}
-        label="Senha"
-        placeholder="Digite aqui sua senha"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <TextField
+          ref={passwordInputRef}
+          label="Senha"
+          placeholder="Digite aqui sua senha"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          returnKeyType="next"
+          onSubmitEditing={() => ccirInputRef.current?.focus()}
+        />
 
-      <PrimaryButton title="LOGAR" activeOpacity={0.8} onPress={handleLogin} />
+        <TextField
+          ref={ccirInputRef}
+          label="CCIR"
+          placeholder="Digite aqui seu CCIR"
+          value={ccir}
+          onChangeText={setCcir}
+        />
 
-      <TouchableOpacity className="w-full items-center" onPress={onNavigateToRegister}>
-        <Text className="font-body text-white text-base underline">Não está cadastrado?</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
-  </View>
+        <PrimaryButton title="CADASTRAR" activeOpacity={0.8} onPress={handleRegister} />
+
+        <TouchableOpacity className="w-full items-center" onPress={onNavigateToLogin}>
+          <Text className="font-body text-white text-base underline">Já está cadastrado?</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
-
