@@ -46,7 +46,7 @@ export default function LoginScreen() {
       <PrimaryButton title="LOGAR" activeOpacity={0.8} onPress={handleLogin} />
 
       <TouchableOpacity className="w-full items-center">
-        <Text className="font-body text-white text-sm underline">Não está cadastrado?</Text>
+        <Text className="font-body text-white text-base underline">Não está cadastrado?</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
