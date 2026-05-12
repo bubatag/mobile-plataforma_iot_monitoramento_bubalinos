@@ -75,7 +75,8 @@ export default function HomeScreen({ onLogout }: HomeScreenProps) {
       className="flex-1 bg-tertiary px-4"
       style={{ paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 24 : 44 }}
     >
-      <View className="flex-row items-center mb-6">
+      {/* Aqui foi adicionado o mt-8 para criar o afastamento real do topo */}
+      <View className="flex-row items-center mt-8 mb-6">
         <TouchableOpacity
           className="rounded-2xl border border-primary p-3"
           onPress={onLogout}
@@ -84,9 +85,9 @@ export default function HomeScreen({ onLogout }: HomeScreenProps) {
           <SvgXml xml={sairIcon} width={24} height={24} />
         </TouchableOpacity>
 
-        <View className="flex-1 mx-3">
+        <View className="flex-2 mx-2 mt-3">
           <Text
-            className="font-title text-white text-sm uppercase tracking-[0.15em] px-4 py-2 border border-primary rounded-lg text-center"
+            className="ml-2 font-title text-white text-sm uppercase tracking-[0.30em] px-4 py-2 border border-primary rounded-lg text-center"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
