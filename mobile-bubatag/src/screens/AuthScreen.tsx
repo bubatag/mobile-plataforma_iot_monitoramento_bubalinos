@@ -47,7 +47,11 @@ const backgroundBottomRight = `<?xml version="1.0" encoding="UTF-8"?>
 </defs>
 </svg>`;
 
-export default function AuthScreen() {
+interface AuthScreenProps {
+  onAuthSuccess: () => void;
+}
+
+export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const [isLogin, setIsLogin] = useState(true);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
@@ -82,6 +86,7 @@ export default function AuthScreen() {
 
   const handleLogin = () => {
     console.log("Login realizado", { email: loginEmail, password: loginPassword });
+    onAuthSuccess();
   };
 
   const handleRegister = () => {
@@ -90,6 +95,7 @@ export default function AuthScreen() {
       email: registerEmail,
       password: registerPassword,
     });
+    onAuthSuccess();
   };
 
   return (
