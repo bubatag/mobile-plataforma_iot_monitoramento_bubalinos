@@ -19,7 +19,7 @@ const sairIcon = `<?xml version="1.0" encoding="UTF-8"?>
 <path d="M19 4H14V2H19C20.1046 2 21 2.89543 21 4V20C21 21.1046 20.1046 22 19 22H14V20H19V4Z" fill="#06D001"/>
 </svg>`;
 
-const colarOptions = ["Colar A", "Colar B", "Colar C", "Colar D"];
+const colarOptions = ["Colar A", "Colar B", "Colar C", "Colar D", "Colar E", "Colar F", "Colar G", "Colar H", "Colar I", "Colar J"];
 
 interface RegisterBubalinoScreenProps {
   onBack: () => void;
@@ -142,7 +142,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
 
               <View className="w-1/2 mb-6">
                 <Text className="font-body text-white text-base mb-2">Selecione o colar</Text>
-                <View className="relative z-10">
+                <View className="relative">
                   <TouchableOpacity
                     className="flex-row items-center justify-between rounded-2xl border border-secondary bg-black/30 px-4 py-4"
                     onPress={toggleCollar}
@@ -153,25 +153,34 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                     </Text>
                     <Text className="text-white text-lg">▾</Text>
                   </TouchableOpacity>
-                  {isCollarOpen && (
-                    <View className="mt-2 rounded-2xl border border-secondary bg-[#122023] overflow-hidden">
-                      {colarOptions.map((option) => (
-                        <TouchableOpacity
-                          key={option}
-                          className="px-4 py-3 border-b border-[#2F3E46] last:border-b-0"
-                          onPress={() => {
-                            setColar(option);
-                            setIsCollarOpen(false);
-                          }}
-                          activeOpacity={0.8}
-                        >
-                          <Text className="text-white font-body text-base" numberOfLines={1}>
-                            {option}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
+          {isCollarOpen && (
+            <>
+              <TouchableOpacity
+                className="absolute inset-0 z-40"
+                onPress={() => setIsCollarOpen(false)}
+                activeOpacity={1}
+              />
+              <View className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-secondary bg-[#122023] overflow-hidden z-50">
+                <ScrollView style={{ maxHeight: 150 }}>
+                  {colarOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option}
+                      className="px-4 py-3 border-b border-[#2F3E46] last:border-b-0"
+                      onPress={() => {
+                        setColar(option);
+                        setIsCollarOpen(false);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text className="text-white font-body text-base" numberOfLines={1}>
+                        {option}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </>
+          )}
                 </View>
               </View>
             </View>
