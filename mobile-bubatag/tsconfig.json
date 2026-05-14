@@ -3,6 +3,6 @@
   "compilerOptions": {
     "strict": true,
     "jsxImportSource": "nativewind",
-    "types": ["nativewind/types"]
+    "types": ["nativewind/types"],
   }
 }

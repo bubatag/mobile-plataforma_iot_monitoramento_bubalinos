@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
+  Animated,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StatusBar,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -33,6 +33,10 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
   const [colar, setColar] = useState("");
   const [isCollarOpen, setIsCollarOpen] = useState(false);
 
+  // Animated values
+  const dropdownAnim = useRef(new Animated.Value(0)).current; // 0 = fechado, 1 = aberto
+  const arrowAnim = useRef(new Animated.Value(0)).current;
+
   const handleNascimentoChange = (text: string) => {
     const digits = text.replace(/\D/g, "").slice(0, 8);
     if (!digits) {
@@ -50,7 +54,66 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
     setNascimento(formatted);
   };
 
-  const toggleCollar = () => setIsCollarOpen((prev) => !prev);
+  const openDropdown = () => {
+    setIsCollarOpen(true);
+    Animated.parallel([
+      Animated.spring(dropdownAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 60,
+        friction: 10,
+      }),
+      Animated.timing(arrowAnim, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const closeDropdown = () => {
+    Animated.parallel([
+      Animated.timing(dropdownAnim, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(arrowAnim, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setIsCollarOpen(false));
+  };
+
+  const toggleCollar = () => {
+    if (isCollarOpen) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  };
+
+  // Interpolações
+  const dropdownTranslateY = dropdownAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-10, 0],
+  });
+
+  const dropdownOpacity = dropdownAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  const dropdownScale = dropdownAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.95, 1],
+  });
+
+  const arrowRotation = arrowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "180deg"],
+  });
 
   return (
     <View
@@ -62,7 +125,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
-          
+
           {/* Botão de Sair (Topo) */}
           <View className="mt-8 mb-6 items-start">
             <TouchableOpacity
@@ -74,7 +137,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
             </TouchableOpacity>
           </View>
 
-          {/* Título (Abaixo do botão de sair, em duas linhas com tamanhos diferentes) */}
+          {/* Título */}
           <View className="w-full mb-8 items-center justify-center">
             <Text className="font-title text-white text-3xl uppercase tracking-widest text-center">
               Cadastre o
@@ -141,45 +204,129 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                 className="flex-1"
               />
 
+              {/* Dropdown do Colar */}
               <View className="w-1/2 mb-6">
                 <Text className="font-body text-white text-base mb-2">Selecione o colar</Text>
-                <View className="relative">
+                <View style={{ position: "relative" }}>
+
+                  {/* Botão trigger */}
                   <TouchableOpacity
-                    className="flex-row items-center justify-between rounded-2xl border border-secondary bg-black/30 px-4 py-4"
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: isCollarOpen ? "#06D001" : "#2F3E46",
+                      backgroundColor: "rgba(0,0,0,0.3)",
+                      paddingHorizontal: 16,
+                      paddingVertical: 16,
+                    }}
                     onPress={toggleCollar}
                     activeOpacity={0.8}
                   >
-                    <Text className={`font-body text-base ${colar ? "text-white" : "text-gray-400"}`} numberOfLines={1}>
-                      {colar || "Selecione o colar"}
+                    <Text
+                      style={{
+                        fontFamily: "body",
+                        fontSize: 16,
+                        color: colar ? "#ffffff" : "#9ca3af",
+                        flex: 1,
+                      }}
+                      numberOfLines={1}
+                    >
+                      {colar || "Selecione"}
                     </Text>
-                    <Text className="text-white text-lg">▾</Text>
+
+                    {/* Seta animada */}
+                    <Animated.Text
+                      style={{
+                        color: isCollarOpen ? "#06D001" : "#ffffff",
+                        fontSize: 18,
+                        transform: [{ rotate: arrowRotation }],
+                      }}
+                    >
+                      ▾
+                    </Animated.Text>
                   </TouchableOpacity>
+
+                  {/* Dropdown animado */}
                   {isCollarOpen && (
                     <>
                       <TouchableOpacity
-                        className="absolute inset-0 z-40"
-                        onPress={() => setIsCollarOpen(false)}
+                        style={{
+                          position: "absolute",
+                          top: 0, left: 0, right: 0, bottom: 0,
+                          zIndex: 40,
+                        }}
+                        onPress={closeDropdown}
                         activeOpacity={1}
                       />
-                      <View className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-secondary bg-[#122023] overflow-hidden z-50">
-                        <ScrollView style={{ maxHeight: 150 }}>
-                          {colarOptions.map((option) => (
-                            <TouchableOpacity
-                              key={option}
-                              className="px-4 py-3 border-b border-[#2F3E46] last:border-b-0"
-                              onPress={() => {
-                                setColar(option);
-                                setIsCollarOpen(false);
-                              }}
-                              activeOpacity={0.8}
-                            >
-                              <Text className="text-white font-body text-base" numberOfLines={1}>
-                                {option}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
+                      <Animated.View
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          left: 0,
+                          right: 0,
+                          marginTop: 8,
+                          borderRadius: 16,
+                          borderWidth: 1,
+                          borderColor: "#2F3E46",
+                          backgroundColor: "#122023",
+                          overflow: "hidden",
+                          zIndex: 50,
+                          opacity: dropdownOpacity,
+                          transform: [
+                            { translateY: dropdownTranslateY },
+                            { scale: dropdownScale },
+                          ],
+                          // Sombra moderna
+                          shadowColor: "#06D001",
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.15,
+                          shadowRadius: 12,
+                          elevation: 10,
+                        }}
+                      >
+                        <ScrollView style={{ maxHeight: 150 }} nestedScrollEnabled>
+                          {colarOptions.map((option, index) => {
+                            const isSelected = colar === option;
+                            return (
+                              <TouchableOpacity
+                                key={option}
+                                style={{
+                                  paddingHorizontal: 16,
+                                  paddingVertical: 12,
+                                  borderBottomWidth: index < colarOptions.length - 1 ? 1 : 0,
+                                  borderBottomColor: "#2F3E46",
+                                  backgroundColor: isSelected ? "rgba(6,208,1,0.08)" : "transparent",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                                onPress={() => {
+                                  setColar(option);
+                                  closeDropdown();
+                                }}
+                                activeOpacity={0.8}
+                              >
+                                <Text
+                                  style={{
+                                    color: isSelected ? "#06D001" : "#ffffff",
+                                    fontSize: 16,
+                                    fontFamily: "body",
+                                  }}
+                                  numberOfLines={1}
+                                >
+                                  {option}
+                                </Text>
+                                {isSelected && (
+                                  <Text style={{ color: "#06D001", fontSize: 14 }}>✓</Text>
+                                )}
+                              </TouchableOpacity>
+                            );
+                          })}
                         </ScrollView>
-                      </View>
+                      </Animated.View>
                     </>
                   )}
                 </View>
@@ -196,7 +343,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                 setNascimento("");
                 setEtiqueta("");
                 setColar("");
-                setIsCollarOpen(false);
+                closeDropdown();
                 onBack();
               }}
             />

@@ -136,7 +136,7 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
         </View>
 
         <TouchableOpacity
-          className="rounded-2xl border border-primary bg-[#1f2933] p-5"
+          className="rounded-2xl border border-primary bg-[#1f2933] p-4"
           activeOpacity={0.8}
           onPress={onAddBubalino}
         >
