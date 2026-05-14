@@ -93,7 +93,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
               onChangeText={setNome}
             />
 
-            <View className="flex-row gap-3">
+            <View className="flex-row gap-3 mb-5">
               <View className="flex-1">
                 <Text className="font-body text-white text-base mb-2">Sexo</Text>
                 <View className="flex-row rounded-2xl border border-secondary bg-black/20 p-2">
