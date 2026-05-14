@@ -62,7 +62,9 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
-          <View className="flex-row items-center mt-8 mb-6">
+          
+          {/* Botão de Sair (Topo) */}
+          <View className="mt-8 mb-6 items-start">
             <TouchableOpacity
               className="rounded-2xl border border-primary p-3"
               onPress={onBack}
@@ -70,21 +72,20 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
             >
               <SvgXml xml={sairIcon} width={24} height={24} />
             </TouchableOpacity>
-
-            <View className="flex-1 mx-3">
-              <Text
-                className="font-title text-white text-2xl uppercase tracking-[0.18em] text-center"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                Cadastre o Bubalino
-              </Text>
-            </View>
-
-            <View className="w-12" />
           </View>
 
-          <View className="rounded-3xl border border-[#2F3E46] bg-[#1f2933] p-5 shadow-lg">
+          {/* Título (Abaixo do botão de sair, em duas linhas com tamanhos diferentes) */}
+          <View className="w-full mb-8 items-center justify-center">
+            <Text className="font-title text-white text-3xl uppercase tracking-widest text-center">
+              Cadastre o
+            </Text>
+            <Text className="font-title text-white text-6xl uppercase tracking-wide text-center mt-[-4px]">
+              Bubalino
+            </Text>
+          </View>
+
+          {/* Formulário */}
+          <View className="rounded-3xl border border-[#2F3E46] bg-[#1f2933] p-5 shadow-lg w-full">
             <TextField
               label="Nome (opcional)"
               placeholder="Digite aqui o nome"
@@ -153,34 +154,34 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                     </Text>
                     <Text className="text-white text-lg">▾</Text>
                   </TouchableOpacity>
-          {isCollarOpen && (
-            <>
-              <TouchableOpacity
-                className="absolute inset-0 z-40"
-                onPress={() => setIsCollarOpen(false)}
-                activeOpacity={1}
-              />
-              <View className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-secondary bg-[#122023] overflow-hidden z-50">
-                <ScrollView style={{ maxHeight: 150 }}>
-                  {colarOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option}
-                      className="px-4 py-3 border-b border-[#2F3E46] last:border-b-0"
-                      onPress={() => {
-                        setColar(option);
-                        setIsCollarOpen(false);
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text className="text-white font-body text-base" numberOfLines={1}>
-                        {option}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            </>
-          )}
+                  {isCollarOpen && (
+                    <>
+                      <TouchableOpacity
+                        className="absolute inset-0 z-40"
+                        onPress={() => setIsCollarOpen(false)}
+                        activeOpacity={1}
+                      />
+                      <View className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-secondary bg-[#122023] overflow-hidden z-50">
+                        <ScrollView style={{ maxHeight: 150 }}>
+                          {colarOptions.map((option) => (
+                            <TouchableOpacity
+                              key={option}
+                              className="px-4 py-3 border-b border-[#2F3E46] last:border-b-0"
+                              onPress={() => {
+                                setColar(option);
+                                setIsCollarOpen(false);
+                              }}
+                              activeOpacity={0.8}
+                            >
+                              <Text className="text-white font-body text-base" numberOfLines={1}>
+                                {option}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    </>
+                  )}
                 </View>
               </View>
             </View>
