@@ -58,9 +58,10 @@ const addIcon = `<?xml version="1.0" encoding="UTF-8"?>
 
 interface HomeScreenProps {
   onLogout?: () => void;
+  onAddBubalino?: () => void;
 }
 
-export default function HomeScreen({ onLogout }: HomeScreenProps) {
+export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps) {
   const [searchText, setSearchText] = useState("");
 
   const geofenceCoordinates = [
@@ -129,7 +130,11 @@ export default function HomeScreen({ onLogout }: HomeScreenProps) {
           />
         </View>
 
-        <TouchableOpacity className="rounded-2xl border border-primary bg-[#1f2933] p-5" activeOpacity={0.8}>
+        <TouchableOpacity
+          className="rounded-2xl border border-primary bg-[#1f2933] p-5"
+          activeOpacity={0.8}
+          onPress={onAddBubalino}
+        >
           <SvgXml xml={addIcon} width={36} height={36} />
         </TouchableOpacity>
       </View>

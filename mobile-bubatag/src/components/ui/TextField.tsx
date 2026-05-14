@@ -3,11 +3,12 @@ import { Text, TextInput, TextInputProps, View } from "react-native";
 
 interface TextFieldProps extends TextInputProps {
   label: string;
+  className?: string;
 }
 
-const TextField = forwardRef<TextInput, TextFieldProps>(({ label, ...props }, ref) => {
+const TextField = forwardRef<TextInput, TextFieldProps>(({ label, className = "", ...props }, ref) => {
   return (
-    <View className="w-full mb-6">
+    <View className={`w-full mb-6 ${className}`}>
       <Text className="font-body text-white text-base mb-2">{label}</Text>
       <TextInput
         ref={ref}
