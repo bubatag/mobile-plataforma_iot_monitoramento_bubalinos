@@ -76,8 +76,8 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
       className="flex-1 bg-tertiary px-4"
       style={{ paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 24 : 44 }}
     >
-      {/* Aqui foi adicionado o mt-8 para criar o afastamento real do topo */}
-      <View className="flex-row items-center mt-8 mb-6">
+      {/* Botão Sair no topo */}
+      <View className="mt-8 mb-6 items-start">
         <TouchableOpacity
           className="rounded-2xl border border-primary p-3"
           onPress={onLogout}
@@ -85,38 +85,43 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
         >
           <SvgXml xml={sairIcon} width={24} height={24} />
         </TouchableOpacity>
+      </View>
 
-        <View className="flex-2 mx-2 mt-3">
+      {/* Container principal do Mapa com a Aba */}
+      <View className="mb-6">
+        
+        {/* Título estilo aba anexada */}
+        <View className="self-start bg-[#3B4950] border-t-2 border-l-2 border-r-2 border-primary rounded-t-2xl px-5 py-2 -mb-[2px] ml-4 z-10">
           <Text
-            className="ml-2 font-title text-white text-sm uppercase tracking-[0.30em] px-4 py-2 border border-primary rounded-lg text-center"
+            className="font-title text-white text-lg uppercase tracking-wide"
             numberOfLines={1}
-            ellipsizeMode="tail"
           >
             LOCALIZAÇÃO DOS BUBALINOS
           </Text>
         </View>
 
-        <View className="w-12" />
+        {/* Mapa */}
+        <View className="overflow-hidden rounded-3xl border-2 border-[#2F3E46] bg-[#1f2933] shadow-lg" style={{ height: 260 }}>
+          <MapView
+            style={{ flex: 1 }}
+            mapType="satellite"
+            initialRegion={{
+              latitude: -23.553,
+              longitude: -46.634,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
+            {mockBubalinos.map((bubalino) => (
+              <Marker key={bubalino.id} coordinate={bubalino.coordinate} title={bubalino.code} />
+            ))}
+          </MapView>
+        </View>
+        
       </View>
 
-      <View className="overflow-hidden rounded-3xl border border-[#2F3E46] bg-[#1f2933] shadow-lg mb-6" style={{ height: 260 }}>
-        <MapView
-          style={{ flex: 1 }}
-          mapType="satellite"
-          initialRegion={{
-            latitude: -23.553,
-            longitude: -46.634,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-        >
-          <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
-          {mockBubalinos.map((bubalino) => (
-            <Marker key={bubalino.id} coordinate={bubalino.coordinate} title={bubalino.code} />
-          ))}
-        </MapView>
-      </View>
-
+      {/* Input de Busca e Botão Adicionar */}
       <View className="flex-row items-center gap-3 mb-4">
         <View className="flex-1 flex-row items-center rounded-2xl border border-secondary bg-tertiary px-4 py-3">
           <SvgXml xml={searchIcon} width={18} height={18} />
