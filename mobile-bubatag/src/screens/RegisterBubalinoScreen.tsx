@@ -281,10 +281,10 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                           ],
                           // Sombra moderna
                           shadowColor: "#06D001",
-                          shadowOffset: { width: 0, height: 4 },
+                          shadowOffset: { width: 0, height: 2 },
                           shadowOpacity: 0.15,
                           shadowRadius: 12,
-                          elevation: 10,
+                          elevation: 1,
                         }}
                       >
                         <ScrollView style={{ maxHeight: 150 }} nestedScrollEnabled>

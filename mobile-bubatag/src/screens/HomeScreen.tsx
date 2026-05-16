@@ -1,18 +1,11 @@
-import { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar, ScrollView } from "react-native";
 import MapView, { Marker, Polygon } from "react-native-maps";
 import { SvgXml } from "react-native-svg";
 
-interface Bubalino {
-  id: string;
-  code: string;
-  coordinate: {
-    latitude: number;
-    longitude: number;
-  };
-}
-
-const mockBubalinos: Bubalino[] = [];
+import { Bubalino as BubalinoType, NewBubalino } from "../types";
+import { getBubalinos, addBubalino } from "../services/mockBubalinos";
+import BubalinoCard from "../components/ui/BubalinoCard";
 
 const sairIcon = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,6 +56,25 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps) {
   const [searchText, setSearchText] = useState("");
+  const [bubalinos, setBubalinos] = useState<BubalinoType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [etiqueta, setEtiqueta] = useState("");
+  const [coleira, setColeira] = useState("");
+  const [statusValue, setStatusValue] = useState("1");
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    getBubalinos().then((list) => {
+      if (!mounted) return;
+      setBubalinos(list);
+      setLoading(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const geofenceCoordinates = [
     { latitude: -23.5489, longitude: -46.6388 },
@@ -113,8 +125,8 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
             }}
           >
             <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
-            {mockBubalinos.map((bubalino) => (
-              <Marker key={bubalino.id} coordinate={bubalino.coordinate} title={bubalino.code} />
+            {bubalinos.map((bubalino) => (
+              <Marker key={bubalino.id} coordinate={bubalino.coordinate as any} title={bubalino.n_etiqueta} />
             ))}
           </MapView>
         </View>
@@ -138,19 +150,88 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
         <TouchableOpacity
           className="rounded-2xl border border-primary bg-[#1f2933] p-4"
           activeOpacity={0.8}
-          onPress={onAddBubalino}
+          onPress={() => {
+            if (onAddBubalino) return onAddBubalino();
+            setShowAddForm((s) => !s);
+          }}
         >
           <SvgXml xml={addIcon} width={36} height={36} />
         </TouchableOpacity>
       </View>
 
-      {mockBubalinos.length === 0 && (
-        <View className="flex-1 items-center justify-center">
-          <Text className="font-body text-gray-400 text-lg italic text-center">
-            (Não há bubalinos cadastrados)
-          </Text>
+      {showAddForm && (
+        <View className="mb-4 rounded-2xl border border-secondary bg-[#122027] p-4">
+          <Text className="text-white font-title mb-2">Cadastrar Bubalino (mock)</Text>
+          <TextInput
+            className="mb-2 rounded px-3 py-2 bg-[#0f2426] text-white"
+            placeholder="Etiqueta"
+            placeholderTextColor="#9CA3AF"
+            value={etiqueta}
+            onChangeText={setEtiqueta}
+          />
+          <TextInput
+            className="mb-2 rounded px-3 py-2 bg-[#0f2426] text-white"
+            placeholder="Número da coleira"
+            placeholderTextColor="#9CA3AF"
+            value={coleira}
+            onChangeText={setColeira}
+            keyboardType="numeric"
+          />
+          <TextInput
+            className="mb-4 rounded px-3 py-2 bg-[#0f2426] text-white"
+            placeholder="Status (1=ok,2=alert,3=warning,4=offline)"
+            placeholderTextColor="#9CA3AF"
+            value={statusValue}
+            onChangeText={setStatusValue}
+            keyboardType="numeric"
+          />
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              className="rounded-2xl border border-primary px-4 py-2"
+              onPress={async () => {
+                if (!etiqueta || !coleira) return;
+                setLoading(true);
+                const payload: NewBubalino = {
+                  n_etiqueta: etiqueta,
+                  n_coleira: Number(coleira),
+                  status: Number(statusValue) as 1 | 2 | 3 | 4,
+                  coordinate: { latitude: -23.553, longitude: -46.634 },
+                };
+                await addBubalino(payload);
+                const list = await getBubalinos();
+                setBubalinos(list);
+                setEtiqueta("");
+                setColeira("");
+                setStatusValue("1");
+                setShowAddForm(false);
+                setLoading(false);
+              }}
+            >
+              <Text className="text-white">Salvar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="rounded-2xl border border-secondary px-4 py-2" onPress={() => setShowAddForm(false)}>
+              <Text className="text-gray-300">Cancelar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
+
+      <ScrollView className="flex-1">
+        {bubalinos.length === 0 ? (
+          <View className="flex-1 items-center justify-center mt-8">
+            <Text className="font-body text-gray-400 text-lg italic text-center">(Não há bubalinos cadastrados)</Text>
+          </View>
+        ) : (
+          <View className="mt-2 pb-12">
+            {bubalinos.map((b) => (
+              <BubalinoCard key={b.id} bubalino={b} />
+            ))}
+          </View>
+        )}
+      </ScrollView>
+
+      
     </View>
   );
 }
