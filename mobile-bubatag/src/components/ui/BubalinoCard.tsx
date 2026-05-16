@@ -1,96 +1,79 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { Bubalino } from "../../types";
 
-interface Props {
-  bubalino: Bubalino;
-  onPress?: () => void;
+interface BubalinoCardProps {
+  id: string;
+  tag: string;
+  collar: string;
+  status: "disconnected" | "location" | "alert" | "healthy";
 }
 
-const icons = {
-  1: {
-    xml: `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="32" fill="#11C700"/>
-      <path d="M45 23c-3.5-4.5-9.5-6-14-2-4.5-4-10.5-2.5-14 2-3.5 4.5-2 11 4 16 6 5 9 7 9 7s3-2 9-7c6-5.1 7.5-11.5 4-16z" fill="#fff"/>
-      <rect x="38" y="34" width="6" height="4" rx="1" fill="#fff" transform="rotate(45 41 36)" />
-    </svg>
-    `,
-    bg: "#11C700",
+const statusDefinitions = {
+  disconnected: {
+    background: "bg-[#4B5563]",
+    icon: `<?xml version="1.0" encoding="UTF-8"?>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 10.5C6.5 7 11.5 7 15 10.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6.5 13C8.25 11.25 11.75 11.25 13.5 13" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9.5 15.5C10.5 14.5 12 14.5 13 15.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8 8L16 16" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 8L8 16" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+      </svg>`,
   },
-  2: {
-    xml: `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="32" fill="#FF3B30"/>
-      <path d="M32 18v18" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="32" cy="44" r="2.5" fill="#fff"/>
-    </svg>
-    `,
-    bg: "#FF3B30",
+  location: {
+    background: "bg-[#F59E0B]",
+    icon: `<?xml version="1.0" encoding="UTF-8"?>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3C8.68629 3 6 5.68629 6 9C6 13.5 12 21 12 21C12 21 18 13.5 18 9C18 5.68629 15.3137 3 12 3Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M12 11C13.1046 11 14 10.1046 14 9C14 7.89543 13.1046 7 12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11Z" fill="#FFFFFF"/>
+        <path d="M8 16L16 8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 16L8 8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+      </svg>`,
   },
-  3: {
-    xml: `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="32" fill="#F2C400"/>
-      <path d="M32 14c-6 0-12 6-12 12 0 8 12 22 12 22s12-14 12-22c0-6-6-12-12-12z" fill="#fff"/>
-      <circle cx="37" cy="28" r="3" fill="#F2C400"/>
-    </svg>
-    `,
-    bg: "#F2C400",
+  alert: {
+    background: "bg-[#EF4444]",
+    icon: `<?xml version="1.0" encoding="UTF-8"?>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="#FFFFFF" opacity="0.08"/>
+        <path d="M12 6V13" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 17H12.01" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+      </svg>`,
   },
-  4: {
-    xml: `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="32" fill="#9CA3AF"/>
-      <path d="M16 26c6-6 16-6 22 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-      <path d="M22 34c4-4 8-4 12 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-      <line x1="44" y1="20" x2="52" y2="28" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-      <line x1="52" y1="20" x2="44" y2="28" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-    `,
-    bg: "#9CA3AF",
+  healthy: {
+    background: "bg-[#22C55E]",
+    icon: `<?xml version="1.0" encoding="UTF-8"?>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.001 20.44L10.553 19.12C5.4 14.76 2 11.8 2 8.28C2 5.32 4.24 3 7.25 3C8.93 3 10.54 3.8 11.5 5.08C12.46 3.8 14.07 3 15.75 3C18.76 3 21 5.32 21 8.28C21 11.8 17.6 14.76 12.447 19.12L12.001 20.44Z" fill="#FFFFFF"/>
+        <path d="M16 8.5V11.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        <path d="M14 10.5H18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+      </svg>`,
   },
 };
 
-export default function BubalinoCard({ bubalino, onPress }: Props) {
-  const icon = icons[bubalino.status] || icons[4];
+export function BubalinoCard({ id, tag, collar, status }: BubalinoCardProps) {
+  const currentStatus = statusDefinitions[status];
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={onPress}
-      className="flex-row items-center justify-between bg-[#263238] rounded-3xl p-5 mb-4 shadow-lg border border-[#172022]"
-    >
-      <View className="flex-row items-center" style={{ gap: 24 }}>
-        <View style={{ width: 72 }}>
-          <Text className="text-sm text-gray-300 underline">ID</Text>
-          <Text className="text-white text-2xl font-title">{bubalino.id}</Text>
+    <View className="mb-4 overflow-hidden rounded-3xl border border-[#2F3E46] bg-[#1f2933] px-5 py-5 shadow-lg">
+      <View className="flex-row items-center justify-between gap-4">
+        <View className="flex-1">
+          <View className="flex-row justify-between mb-4">
+            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">ID</Text>
+            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">Etiqueta</Text>
+            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">Colar</Text>
+          </View>
+
+          <View className="flex-row justify-between items-end">
+            <Text className="font-title text-white text-3xl">{id}</Text>
+            <Text className="font-title text-white text-3xl">{tag}</Text>
+            <Text className="font-title text-white text-3xl">{collar}</Text>
+          </View>
         </View>
 
-        <View style={{ width: 180 }}>
-          <Text className="text-sm text-gray-300 underline">Etiqueta</Text>
-          <Text className="text-white text-3xl font-title">{bubalino.n_etiqueta}</Text>
-        </View>
-
-        <View style={{ width: 72 }}>
-          <Text className="text-sm text-gray-300 underline">Colar</Text>
-          <Text className="text-white text-2xl">{bubalino.n_coleira}</Text>
+        <View className={`rounded-full p-4 ${currentStatus.background} shadow-lg`}>
+          <SvgXml xml={currentStatus.icon} width={36} height={36} />
         </View>
       </View>
-
-      <View style={{ alignItems: "center" }}>
-        <View style={{
-          width: 64,
-          height: 64,
-          borderRadius: 32,
-          backgroundColor: icon.bg,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <SvgXml xml={icon.xml} width={36} height={36} />
-        </View>
-      </View>
-    </TouchableOpacity>
+    </View>
   );
 }
