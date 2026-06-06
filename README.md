@@ -1,5 +1,4 @@
-````markdown
-![Bubatag Banner](banner-github-v3.png)
+
 
 # 🐃 Bubatag - Mobile App
 
