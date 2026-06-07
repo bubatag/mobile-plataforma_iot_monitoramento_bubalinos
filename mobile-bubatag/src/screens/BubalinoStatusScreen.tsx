@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FC } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -14,18 +14,26 @@ import {
 } from "react-native";
 import Svg, { Defs, Rect, RadialGradient, Stop } from "react-native-svg";
 import { SvgXml } from "react-native-svg";
+import type { SvgProps } from "react-native-svg";
 import { CartesianChart, Line as VictoryLine } from "victory-native";
+import YellowHeartIcon from "../../assets/status/coracao-amarelo.svg";
+import GreenHeartIcon from "../../assets/status/coracao-verde.svg";
+import RedHeartIcon from "../../assets/status/coracao-vermelho.svg";
+import DisconnectedIcon from "../../assets/status/sem-sinal.svg";
+import YellowThermometerIcon from "../../assets/status/termometro-amarelo.svg";
+import GreenThermometerIcon from "../../assets/status/termometro-verde.svg";
+import RedThermometerIcon from "../../assets/status/termometro-vermelho.svg";
 
 export type BubalinoStatusData = {
   id: string;
   tag: string;
   collar: string;
-  status: "healthy";
+  status: "healthy" | "alert" | "location" | "disconnected";
   name: string;
   sex: "Macho" | "Femea";
   birthDate: string;
-  pulse: number;
-  temperature: number;
+  pulse?: number;
+  temperature?: number;
 };
 
 interface BubalinoStatusScreenProps {
@@ -115,6 +123,30 @@ function getTemperatureColor(temperature: number) {
   if (temperature < 38 || temperature > 39.7) return "#F9AB00";
   return "#06D001";
 }
+
+type StatusVisualConfig = {
+  accentColor: string;
+  heartIcon: FC<SvgProps>;
+  thermometerIcon: FC<SvgProps>;
+};
+
+const statusVisualConfig: Record<Exclude<BubalinoStatusData["status"], "disconnected">, StatusVisualConfig> = {
+  healthy: {
+    accentColor: "#06D001",
+    heartIcon: GreenHeartIcon,
+    thermometerIcon: GreenThermometerIcon,
+  },
+  alert: {
+    accentColor: "#FF3939",
+    heartIcon: RedHeartIcon,
+    thermometerIcon: RedThermometerIcon,
+  },
+  location: {
+    accentColor: "#F9AB00",
+    heartIcon: YellowHeartIcon,
+    thermometerIcon: YellowThermometerIcon,
+  },
+};
 
 function PulseChart({ color }: { color: string }) {
   const domain = useMemo(() => ({ x: [1, pulseSeries.length] as [number, number], y: [38, 62] as [number, number] }), []);
@@ -234,7 +266,15 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
   const [info, setInfo] = useState(bubalino);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(bubalino);
-  const pulseColor = getPulseColor(info.pulse);
+  const isDisconnected = info.status === "disconnected";
+  const pulse = info.pulse ?? 0;
+  const temperature = info.temperature ?? 0;
+  const visualConfig = isDisconnected
+    ? statusVisualConfig.healthy
+    : statusVisualConfig[info.status as Exclude<BubalinoStatusData["status"], "disconnected">];
+  const HeartStatusIcon = visualConfig.heartIcon;
+  const ThermometerStatusIcon = visualConfig.thermometerIcon;
+  const pulseColor = isDisconnected ? visualConfig.accentColor : getPulseColor(pulse);
 
   const openEditModal = () => {
     setDraft(info);
@@ -287,29 +327,50 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
         </Text>
         <View className="h-[2px] bg-white mt-2 mb-5 -mx-5" />
 
-        <View className="bg-[#2B3940] rounded-[28px] px-4 pt-4 pb-3 shadow-lg border border-[#2D3B42]">
-          <PulseChart color={pulseColor} />
-          <View className="mt-5 flex-row items-center">
-            <SvgXml xml={heartIcon} width={86} height={70} />
-            <View className="ml-3 flex-row items-end">
-              <View>
-                <Text className="font-body text-white text-sm text-center border-b border-white px-1 mb-0.5">PULSO</Text>
-                <Text className="font-body text-white text-5xl leading-[56px]">{info.pulse}</Text>
+        {isDisconnected ? (
+          <View className="bg-[#2B3940] rounded-[28px] px-5 py-6 shadow-lg border border-[#2D3B42]">
+            <View className="flex-row items-center">
+              <View className="h-[64px] w-[64px] rounded-2xl bg-white/10 items-center justify-center border border-white/10">
+                <DisconnectedIcon width={42} height={42} />
               </View>
-              <Text className="font-body text-white text-lg mb-2 ml-1">BPM</Text>
+              <View className="ml-4 flex-1">
+                <Text className="font-title text-white text-2xl" numberOfLines={1} adjustsFontSizeToFit>
+                  Perda de conexão
+                </Text>
+                <View className="h-[2px] bg-white/80 mt-2" />
+              </View>
             </View>
-          </View>
-        </View>
-
-        <View className="mt-14 flex-row items-center">
-          <SvgXml xml={thermometerIcon} width={139} height={141} />
-          <View className="ml-4">
-            <Text className="font-body text-white text-xl border-b border-white pb-1">TEMPERATURA</Text>
-            <Text className="font-body text-white text-6xl mt-3">
-              {info.temperature.toFixed(1).replace(".", ",")}
+            <Text className="font-body text-white text-lg leading-7 mt-6">
+              A conexão Bubalino de ID {info.id} da coleira {info.collar} infelizmente foi perdida.
             </Text>
           </View>
-        </View>
+        ) : (
+          <>
+            <View className="bg-[#2B3940] rounded-[28px] px-4 pt-4 pb-3 shadow-lg border border-[#2D3B42]">
+              <PulseChart color={pulseColor} />
+              <View className="mt-5 flex-row items-center">
+                <HeartStatusIcon width={86} height={70} />
+                <View className="ml-3 flex-row items-end">
+                  <View>
+                    <Text className="font-body text-white text-sm text-center border-b border-white px-1 mb-0.5">PULSO</Text>
+                    <Text className="font-body text-white text-5xl leading-[56px]">{pulse}</Text>
+                  </View>
+                  <Text className="font-body text-white text-lg mb-2 ml-1">BPM</Text>
+                </View>
+              </View>
+            </View>
+
+            <View className="mt-14 flex-row items-center">
+              <ThermometerStatusIcon width={139} height={141} />
+              <View className="ml-4">
+                <Text className="font-body text-white text-xl border-b border-white pb-1">TEMPERATURA</Text>
+                <Text className="font-body text-white text-6xl mt-3">
+                  {temperature.toFixed(1).replace(".", ",")}
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
 
         <View className="mt-16">
           <Text className="font-title text-white text-3xl mb-2">Informações</Text>

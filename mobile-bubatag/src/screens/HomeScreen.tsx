@@ -126,6 +126,25 @@ export default function HomeScreen({
     onAddBubalino?.();
   };
 
+  const openBubalinoStatus = (item: BubalinoItem) => {
+    const vitalSignsByStatus: Partial<Record<BubalinoItem["status"], Pick<BubalinoStatusData, "pulse" | "temperature">>> = {
+      healthy: { pulse: 72, temperature: 39 },
+      alert: { pulse: 96, temperature: 40.6 },
+      location: { pulse: 58, temperature: 38.2 },
+    };
+
+    onOpenBubalinoStatus?.({
+      id: item.id,
+      tag: item.tag,
+      collar: item.collar,
+      status: item.status,
+      name: "",
+      sex: "Macho",
+      birthDate: "14/03/2024",
+      ...vitalSignsByStatus[item.status],
+    });
+  };
+
   return (
     <View
       className="flex-1 bg-tertiary px-4"
@@ -199,22 +218,7 @@ export default function HomeScreen({
                 tag={item.tag}
                 collar={item.collar}
                 status={item.status}
-                onPress={
-                  item.status === "healthy"
-                    ? () =>
-                        onOpenBubalinoStatus?.({
-                          id: item.id,
-                          tag: item.tag,
-                          collar: item.collar,
-                          status: "healthy",
-                          name: "",
-                          sex: "Macho",
-                          birthDate: "14/03/2024",
-                          pulse: 72,
-                          temperature: 39,
-                        })
-                    : undefined
-                }
+                onPress={() => openBubalinoStatus(item)}
               />
             ))}
           </View>
