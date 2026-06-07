@@ -23,28 +23,28 @@ const initialBubalinos: BubalinoItem[] = [
     tag: "BC75",
     collar: "4",
     status: "disconnected",
-    coordinate: { latitude: -23.5529, longitude: -46.6348 },
+    coordinate: { latitude: -24.58775, longitude: -47.88855 },
   },
   {
     id: "3",
     tag: "JI44",
     collar: "3",
     status: "location",
-    coordinate: { latitude: -23.5535, longitude: -46.6332 },
+    coordinate: { latitude: -24.58728, longitude: -47.88792 },
   },
   {
     id: "2",
     tag: "TA19",
     collar: "2",
     status: "alert",
-    coordinate: { latitude: -23.5517, longitude: -46.6351 },
+    coordinate: { latitude: -24.58678, longitude: -47.88892 },
   },
   {
     id: "1",
     tag: "TE18",
     collar: "1",
     status: "healthy",
-    coordinate: { latitude: -23.5542, longitude: -46.6324 },
+    coordinate: { latitude: -24.58795, longitude: -47.88762 },
   },
 ];
 
@@ -77,10 +77,10 @@ export default function HomeScreen({
   const [nextMockId, setNextMockId] = useState(5);
 
   const geofenceCoordinates = [
-    { latitude: -23.5489, longitude: -46.6388 },
-    { latitude: -23.5489, longitude: -46.6288 },
-    { latitude: -23.5589, longitude: -46.6288 },
-    { latitude: -23.5589, longitude: -46.6388 },
+    { latitude: -24.586566, longitude: -47.890521 },
+    { latitude: -24.586383, longitude: -47.887572 },
+    { latitude: -24.587845, longitude: -47.886824 },
+    { latitude: -24.588641, longitude: -47.888166 },
   ];
 
   const filteredBubalinos = useMemo(
@@ -116,8 +116,8 @@ export default function HomeScreen({
       collar: String(((newIndex - 1) % 4) + 1),
       status: newStatus,
       coordinate: {
-        latitude: -23.553 + (Math.random() - 0.5) * 0.01,
-        longitude: -46.634 + (Math.random() - 0.5) * 0.01,
+        latitude: -24.5875 + (Math.random() - 0.5) * 0.0012,
+        longitude: -47.8884 + (Math.random() - 0.5) * 0.0012,
       },
     };
 
@@ -173,10 +173,10 @@ export default function HomeScreen({
               style={{ flex: 1 }}
               mapType="satellite"
               initialRegion={{
-                latitude: -23.553,
-                longitude: -46.634,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
+                latitude: -24.58736,
+                longitude: -47.88827,
+                latitudeDelta: 0.0032,
+                longitudeDelta: 0.0045,
               }}
             >
               <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
