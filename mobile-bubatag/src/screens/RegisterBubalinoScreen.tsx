@@ -129,7 +129,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
           {/* Botão de Sair (Topo) */}
           <View className="mt-8 mb-6 items-start">
             <TouchableOpacity
-              className="rounded-2xl border border-primary p-3"
+              className="rounded-2xl border border-primary bg-[#1f2933] p-3"
               onPress={onBack}
               activeOpacity={0.8}
             >

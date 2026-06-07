@@ -164,7 +164,7 @@ export default function HomeScreen({
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
         <View className="mt-8 mb-6 items-start">
           <TouchableOpacity
-            className="rounded-2xl border border-primary p-3"
+            className="rounded-2xl border border-primary bg-[#1f2933] p-3"
             onPress={onLogout}
             activeOpacity={0.8}
           >
