@@ -53,10 +53,15 @@ const deleteIcon = `<?xml version="1.0" encoding="UTF-8"?>
 <path d="M19 5L5 19"/>
 </svg>`;
 
-const helpIcon = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06D001" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-<path d="M9.1 9A3 3 0 1 1 12 13"/>
-<path d="M12 17H12.01"/>
+const backgroundBottomRight = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="351" height="351" viewBox="0 0 351 351" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M175.5 0C272.426 0 351 78.574 351 175.5C351 272.426 272.426 351 175.5 351C78.574 351 0 272.426 0 175.5C0 78.574 78.574 0 175.5 0ZM175.5 10.5479C84.3993 10.5479 10.5479 84.3993 10.5479 175.5C10.5479 266.601 84.3993 340.452 175.5 340.452C266.601 340.452 340.452 266.601 340.452 175.5C340.452 84.3993 266.601 10.5479 175.5 10.5479ZM175.691 29.0586C252.873 29.0587 315.441 91.6271 315.441 168.809C315.441 245.99 252.873 308.558 175.691 308.559C98.5096 308.559 35.9414 245.99 35.9414 168.809C35.9416 91.627 98.5097 29.0586 175.691 29.0586ZM175.691 60.7891C116.034 60.7891 67.6711 109.151 67.6709 168.809C67.6709 228.467 116.033 276.829 175.691 276.829C235.349 276.829 283.712 228.466 283.712 168.809C283.712 109.151 235.349 60.7892 175.691 60.7891Z" fill="url(#paint0_linear_2846_14175)"/>
+<defs>
+<linearGradient id="paint0_linear_2846_14175" x1="73" y1="15.5" x2="126.945" y2="118.393" gradientUnits="userSpaceOnUse">
+<stop stop-color="#90A955"/>
+<stop offset="1" stop-color="#038000"/>
+</linearGradient>
+</defs>
 </svg>`;
 
 const pulseSeries = [44, 46, 43, 58, 42, 47, 48, 46, 47, 45, 47, 43, 55, 42, 45, 45, 56, 42, 47, 49, 46, 47, 46, 45, 46, 48, 45, 58, 43, 56, 43, 47, 46, 49, 48, 47, 50, 42, 47];
@@ -71,6 +76,13 @@ function getTemperatureColor(temperature: number) {
   if (temperature < 37.5 || temperature > 40.2) return "#FF3939";
   if (temperature < 38 || temperature > 39.7) return "#F9AB00";
   return "#06D001";
+}
+
+function formatDateInput(text: string) {
+  const digits = text.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 }
 
 function HeartIcon({ color }: { color: string }) {
@@ -195,13 +207,17 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
       className="flex-1 bg-tertiary px-5"
       style={{ paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 24 : 44 }}
     >
-      <View className="absolute -bottom-16 -right-20 h-52 w-52 rounded-full border-[16px] border-secondary opacity-20" />
-      <View className="absolute -bottom-11 -right-8 h-44 w-44 rounded-full border-[12px] border-primary opacity-20" />
+      <View
+        style={{ position: "absolute", bottom: -100, right: -100, width: 280, height: 280, opacity: 0.5 }}
+        pointerEvents="none"
+      >
+        <SvgXml xml={backgroundBottomRight} width="380" height="380" />
+      </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 34 }} showsVerticalScrollIndicator={false}>
-        <View className="mt-8 mb-9 items-start">
+        <View className="mt-8 mb-6 items-start">
           <TouchableOpacity
-            className="rounded-lg border border-primary p-2 shadow-sm"
+            className="rounded-2xl border border-primary p-3"
             onPress={onBack}
             activeOpacity={0.8}
           >
@@ -262,9 +278,6 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
               <TouchableOpacity className="mt-9 h-[48px] w-[48px] rounded-lg bg-[#FF3939] items-center justify-center shadow-sm" onPress={confirmDelete} activeOpacity={0.82}>
                 <SvgXml xml={deleteIcon} width={34} height={34} />
               </TouchableOpacity>
-              <TouchableOpacity className="mt-8 h-[48px] w-[48px] rounded-lg border border-primary items-center justify-center" activeOpacity={0.8}>
-                <SvgXml xml={helpIcon} width={30} height={30} />
-              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -302,12 +315,15 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
                   <TextInput
                     className="w-full bg-black/30 rounded-lg p-4 text-white font-body"
                     value={draft.birthDate}
-                    onChangeText={(birthDate) => setDraft((current) => ({ ...current, birthDate }))}
+                    onChangeText={(birthDate) => setDraft((current) => ({ ...current, birthDate: formatDateInput(birthDate) }))}
+                    keyboardType="number-pad"
+                    maxLength={10}
+                    placeholder="dd/mm/aaaa"
                     placeholderTextColor="#9CA3AF"
                   />
                 </View>
               </View>
-              <View className="flex-row gap-3 mt-2">
+              <View className="flex-row gap-3 mt-8">
                 <TouchableOpacity className="flex-1 rounded-lg border border-white/50 py-4 items-center" onPress={() => setIsEditing(false)}>
                   <Text className="font-title text-white text-base">CANCELAR</Text>
                 </TouchableOpacity>
