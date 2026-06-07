@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar, ScrollVie
 import MapView, { Marker, Polygon } from "react-native-maps";
 import { SvgXml } from "react-native-svg";
 import AddBubalinoIcon from "../../assets/adicionar-bufalo.svg";
+import MapBuffaloIcon from "../../assets/bufalo-mapa-pin.svg";
 import { BubalinoCard } from "../components/ui/BubalinoCard";
 import type { BubalinoStatusData } from "./BubalinoStatusScreen";
 
@@ -200,9 +201,23 @@ export default function HomeScreen({
                 longitudeDelta: 0.00135,
               }}
             >
-              <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
+              <Polygon
+                coordinates={geofenceCoordinates}
+                strokeColor="#06D001"
+                fillColor="rgba(6, 208, 1, 0.18)"
+                strokeWidth={2}
+              />
               {bubalinos.map((bubalino) => (
-                <Marker key={bubalino.id} coordinate={bubalino.coordinate} title={bubalino.tag} />
+                <Marker
+                  key={bubalino.id}
+                  coordinate={bubalino.coordinate}
+                  title={bubalino.tag}
+                  anchor={{ x: 0.5, y: 0.5 }}
+                >
+                  <View collapsable={false} pointerEvents="none" style={{ width: 59, height: 43 }}>
+                    <MapBuffaloIcon width={59} height={43} />
+                  </View>
+                </Marker>
               ))}
             </MapView>
           </View>
