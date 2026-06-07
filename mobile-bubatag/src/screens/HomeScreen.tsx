@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar, ScrollView } from "react-native";
 import MapView, { Marker, Polygon } from "react-native-maps";
 import { SvgXml } from "react-native-svg";
@@ -75,6 +75,12 @@ export default function HomeScreen({
   const [searchText, setSearchText] = useState("");
   const [bubalinos, setBubalinos] = useState(initialBubalinos);
   const [nextMockId, setNextMockId] = useState(5);
+  const mapRef = useRef<MapView>(null);
+
+  const farmMapCenter = {
+    latitude: -24.58755,
+    longitude: -47.88842,
+  };
 
   const geofenceCoordinates = [
     { latitude: -24.586566, longitude: -47.890521 },
@@ -105,6 +111,18 @@ export default function HomeScreen({
   );
 
   const statusCycle: BubalinoItem["status"][] = ["healthy", "disconnected", "location", "alert"];
+
+  const focusFarmArea = () => {
+    mapRef.current?.animateCamera(
+      {
+        center: farmMapCenter,
+        zoom: 16.8,
+        pitch: 0,
+        heading: 0,
+      },
+      { duration: 250 }
+    );
+  };
 
   const handleAddMockBubalino = () => {
     const newIndex = nextMockId;
@@ -170,13 +188,16 @@ export default function HomeScreen({
 
           <View className="overflow-hidden rounded-3xl border-2 border-[#2F3E46] bg-[#1f2933] shadow-lg" style={{ height: 260 }}>
             <MapView
+              ref={mapRef}
               style={{ flex: 1 }}
               mapType="satellite"
+              onMapReady={focusFarmArea}
+              onLayout={focusFarmArea}
               initialRegion={{
-                latitude: -24.58736,
-                longitude: -47.88827,
-                latitudeDelta: 0.0032,
-                longitudeDelta: 0.0045,
+                latitude: farmMapCenter.latitude,
+                longitude: farmMapCenter.longitude,
+                latitudeDelta: 0.00105,
+                longitudeDelta: 0.00135,
               }}
             >
               <Polygon coordinates={geofenceCoordinates} strokeColor="red" strokeWidth={2} />
