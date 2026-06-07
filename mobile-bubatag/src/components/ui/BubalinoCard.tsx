@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import React from "react";
+import { View, Text } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 interface BubalinoCardProps {
@@ -8,72 +9,61 @@ interface BubalinoCardProps {
   status: "disconnected" | "location" | "alert" | "healthy";
 }
 
-const statusDefinitions = {
-  disconnected: {
-    background: "bg-[#4B5563]",
-    icon: `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 10.5C6.5 7 11.5 7 15 10.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M6.5 13C8.25 11.25 11.75 11.25 13.5 13" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M9.5 15.5C10.5 14.5 12 14.5 13 15.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M8 8L16 16" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M16 8L8 16" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-      </svg>`,
-  },
-  location: {
-    background: "bg-[#F59E0B]",
-    icon: `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3C8.68629 3 6 5.68629 6 9C6 13.5 12 21 12 21C12 21 18 13.5 18 9C18 5.68629 15.3137 3 12 3Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M12 11C13.1046 11 14 10.1046 14 9C14 7.89543 13.1046 7 12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11Z" fill="#FFFFFF"/>
-        <path d="M8 16L16 8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M16 16L8 8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-      </svg>`,
+// Ícones SVG minimalistas para cada status
+const statusConfig = {
+  healthy: {
+    // Verde primário do Design System (#06D001) - Ícone de Check
+    icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06D001" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+    bgColor: "rgba(6, 208, 1, 0.12)",
   },
   alert: {
-    background: "bg-[#EF4444]",
-    icon: `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="#FFFFFF" opacity="0.08"/>
-        <path d="M12 6V13" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M12 17H12.01" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-      </svg>`,
+    // Amarelo/Laranja - Ícone de Alerta
+    icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F9AB00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    bgColor: "rgba(249, 171, 0, 0.12)",
   },
-  healthy: {
-    background: "bg-[#22C55E]",
-    icon: `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12.001 20.44L10.553 19.12C5.4 14.76 2 11.8 2 8.28C2 5.32 4.24 3 7.25 3C8.93 3 10.54 3.8 11.5 5.08C12.46 3.8 14.07 3 15.75 3C18.76 3 21 5.32 21 8.28C21 11.8 17.6 14.76 12.447 19.12L12.001 20.44Z" fill="#FFFFFF"/>
-        <path d="M16 8.5V11.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        <path d="M14 10.5H18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-      </svg>`,
+  location: {
+    // Vermelho - Ícone de Pino de Mapa (Fugiu do perímetro)
+    icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D93025" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
+    bgColor: "rgba(217, 48, 37, 0.12)",
+  },
+  disconnected: {
+    // Cinza - Ícone de Sem Sinal
+    icon: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`,
+    bgColor: "rgba(156, 163, 175, 0.15)",
   },
 };
 
 export function BubalinoCard({ id, tag, collar, status }: BubalinoCardProps) {
-  const currentStatus = statusDefinitions[status];
+  const currentStatus = statusConfig[status] || statusConfig.healthy;
 
   return (
-    <View className="mb-4 overflow-hidden rounded-3xl border border-[#2F3E46] bg-[#1f2933] px-5 py-5 shadow-lg">
-      <View className="flex-row items-center justify-between gap-4">
-        <View className="flex-1">
-          <View className="flex-row justify-between mb-4">
-            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">ID</Text>
-            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">Etiqueta</Text>
-            <Text className="font-body text-gray-400 text-xs uppercase tracking-[0.18em]">Colar</Text>
-          </View>
-
-          <View className="flex-row justify-between items-end">
-            <Text className="font-title text-white text-3xl">{id}</Text>
-            <Text className="font-title text-white text-3xl">{tag}</Text>
-            <Text className="font-title text-white text-3xl">{collar}</Text>
-          </View>
-        </View>
-
-        <View className={`rounded-full p-4 ${currentStatus.background} shadow-lg`}>
-          <SvgXml xml={currentStatus.icon} width={36} height={36} />
+    <View className="bg-[#27333A] rounded-2xl p-4 mb-3 border border-[#141B1F] flex-row justify-between items-center shadow-sm">
+      
+      {/* Informações de Identificação */}
+      <View>
+        <Text className="font-title text-xl text-white mb-0.5">
+          {tag}
+        </Text>
+        
+        <View className="flex-row items-center gap-2">
+          <Text className="font-body text-sm text-gray-400">
+            ID: <Text className="font-bold text-gray-200">{id}</Text>
+          </Text>
+          <Text className="font-body text-sm text-gray-500">•</Text>
+          <Text className="font-body text-sm text-gray-400">
+            Colar: <Text className="font-bold text-gray-200">#{collar}</Text>
+          </Text>
         </View>
       </View>
+
+      {/* Ícone de Status (Sem Texto) */}
+      <View 
+        style={{ backgroundColor: currentStatus.bgColor }}
+        className="w-12 h-12 rounded-full items-center justify-center"
+      >
+        <SvgXml xml={currentStatus.icon} />
+      </View>
+
     </View>
   );
 }
