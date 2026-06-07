@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar, ScrollVie
 import MapView, { Marker, Polygon } from "react-native-maps";
 import { SvgXml } from "react-native-svg";
 import { BubalinoCard } from "../components/ui/BubalinoCard";
+import type { BubalinoStatusData } from "./BubalinoStatusScreen";
 
 type BubalinoItem = {
   id: string;
@@ -91,9 +92,16 @@ const addIcon = `<?xml version="1.0" encoding="UTF-8"?>
 interface HomeScreenProps {
   onLogout?: () => void;
   onAddBubalino?: () => void;
+  onOpenBubalinoStatus?: (bubalino: BubalinoStatusData) => void;
+  deletedBubalinoIds?: string[];
 }
 
-export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps) {
+export default function HomeScreen({
+  onLogout,
+  onAddBubalino,
+  onOpenBubalinoStatus,
+  deletedBubalinoIds = [],
+}: HomeScreenProps) {
   const [searchText, setSearchText] = useState("");
   const [bubalinos, setBubalinos] = useState(initialBubalinos);
   const [nextMockId, setNextMockId] = useState(5);
@@ -108,6 +116,10 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
   const filteredBubalinos = useMemo(
     () =>
       bubalinos.filter((item) => {
+        if (deletedBubalinoIds.includes(item.id)) {
+          return false;
+        }
+
         const query = searchText.toLowerCase().trim();
         if (!query) {
           return true;
@@ -119,7 +131,7 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
           item.collar.includes(query)
         );
       }),
-    [bubalinos, searchText]
+    [bubalinos, searchText, deletedBubalinoIds]
   );
 
   const statusCycle: BubalinoItem["status"][] = ["healthy", "disconnected", "location", "alert"];
@@ -187,7 +199,7 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
         </View>
 
         <View className="flex-row items-center gap-3 mb-4">
-          <View className="flex-1 flex-row items-center rounded-2xl border border-secondary bg-tertiary px-4 py-3">
+          <View className="flex-1 flex-row items-center rounded-2xl border border-primary bg-[#1f2933] px-4 py-3">
             <SvgXml xml={searchIcon} width={18} height={18} />
             <TextInput
               className="ml-3 flex-1 text-white font-body text-base"
@@ -217,6 +229,22 @@ export default function HomeScreen({ onLogout, onAddBubalino }: HomeScreenProps)
                 tag={item.tag}
                 collar={item.collar}
                 status={item.status}
+                onPress={
+                  item.status === "healthy"
+                    ? () =>
+                        onOpenBubalinoStatus?.({
+                          id: item.id,
+                          tag: item.tag,
+                          collar: item.collar,
+                          status: "healthy",
+                          name: "",
+                          sex: "Macho",
+                          birthDate: "14/03/2024",
+                          pulse: 72,
+                          temperature: 39,
+                        })
+                    : undefined
+                }
               />
             ))}
           </View>

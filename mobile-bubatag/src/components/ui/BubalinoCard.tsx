@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 interface BubalinoCardProps {
@@ -7,6 +7,7 @@ interface BubalinoCardProps {
   tag: string;
   collar: string;
   status: "disconnected" | "location" | "alert" | "healthy";
+  onPress?: () => void;
 }
 
 // Ícones SVG minimalistas para cada status
@@ -33,11 +34,16 @@ const statusConfig = {
   },
 };
 
-export function BubalinoCard({ id, tag, collar, status }: BubalinoCardProps) {
+export function BubalinoCard({ id, tag, collar, status, onPress }: BubalinoCardProps) {
   const currentStatus = statusConfig[status] || statusConfig.healthy;
+  const CardContainer = onPress ? TouchableOpacity : View;
 
   return (
-    <View className="bg-[#27333A] rounded-2xl p-4 mb-3 border border-[#141B1F] flex-row justify-between items-center shadow-sm">
+    <CardContainer
+      className="bg-[#27333A] rounded-2xl p-4 mb-3 border border-[#141B1F] flex-row justify-between items-center shadow-sm"
+      onPress={onPress}
+      activeOpacity={0.82}
+    >
       
       {/* Informações de Identificação */}
       <View>
@@ -64,6 +70,6 @@ export function BubalinoCard({ id, tag, collar, status }: BubalinoCardProps) {
         <SvgXml xml={currentStatus.icon} />
       </View>
 
-    </View>
+    </CardContainer>
   );
 }
