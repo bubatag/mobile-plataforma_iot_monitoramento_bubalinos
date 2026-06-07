@@ -6,6 +6,7 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,8 +14,6 @@ import {
 } from "react-native";
 import Svg, { Defs, Line, Path, Rect, RadialGradient, Stop } from "react-native-svg";
 import { SvgXml } from "react-native-svg";
-import { PrimaryButton } from "../components/ui/PrimaryButton";
-import TextField from "../components/ui/TextField";
 
 export type BubalinoStatusData = {
   id: string;
@@ -160,6 +159,57 @@ function InfoBox({ label, value, italic = false }: { label: string; value: strin
   );
 }
 
+function ModalField({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType,
+}: {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  placeholder?: string;
+  keyboardType?: "default" | "number-pad";
+}) {
+  return (
+    <View className="mb-6">
+      <Text className="font-body text-white text-base mb-2">{label}</Text>
+      <TextInput
+        className="w-full bg-black/30 rounded-lg p-4 text-white font-body"
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+        keyboardType={keyboardType}
+      />
+    </View>
+  );
+}
+
+function ModalSaveButton({ onPress }: { onPress: () => void }) {
+  return (
+    <TouchableOpacity
+      className="flex-1 h-[56px] rounded-lg items-center justify-center overflow-hidden"
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <Svg width="100%" height="100%">
+          <Defs>
+            <RadialGradient id="modalSaveGradient" cx="50%" cy="50%" rx="100%" ry="100%">
+              <Stop offset="0%" stopColor="#06D001" stopOpacity={1} />
+              <Stop offset="100%" stopColor="#04A600" stopOpacity={1} />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#modalSaveGradient)" />
+        </Svg>
+      </View>
+      <Text className="text-tertiary font-title font-bold text-lg">SALVAR</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDelete }: BubalinoStatusScreenProps) {
   const [info, setInfo] = useState(bubalino);
   const [isEditing, setIsEditing] = useState(false);
@@ -275,10 +325,28 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="rounded-2xl bg-[#233138] border border-primary p-5">
               <Text className="font-title text-white text-2xl mb-5">Modificar informações</Text>
-              <TextField label="Nome" value={draft.name} onChangeText={(name) => setDraft((current) => ({ ...current, name }))} placeholder="Digite o nome" />
+              <ModalField
+                label="Nome"
+                value={draft.name}
+                onChangeText={(name) => setDraft((current) => ({ ...current, name }))}
+                placeholder="Digite o nome"
+              />
               <View className="flex-row gap-3">
-                <TextField label="Etiqueta" value={draft.tag} onChangeText={(tag) => setDraft((current) => ({ ...current, tag }))} className="flex-1" />
-                <TextField label="Colar" value={draft.collar} onChangeText={(collar) => setDraft((current) => ({ ...current, collar }))} className="w-24" keyboardType="number-pad" />
+                <View className="flex-1">
+                  <ModalField
+                    label="Etiqueta"
+                    value={draft.tag}
+                    onChangeText={(tag) => setDraft((current) => ({ ...current, tag }))}
+                  />
+                </View>
+                <View className="w-24">
+                  <ModalField
+                    label="Colar"
+                    value={draft.collar}
+                    onChangeText={(collar) => setDraft((current) => ({ ...current, collar }))}
+                    keyboardType="number-pad"
+                  />
+                </View>
               </View>
               <View className="flex-row gap-3">
                 <View className="flex-1">
@@ -307,13 +375,11 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
                   />
                 </View>
               </View>
-              <View className="flex-row gap-3 mt-2">
-                <TouchableOpacity className="flex-1 rounded-lg border border-white/50 py-4 items-center" onPress={() => setIsEditing(false)}>
+              <View className="flex-row gap-3 mt-6">
+                <TouchableOpacity className="flex-1 h-[56px] rounded-lg border border-white/50 items-center justify-center" onPress={() => setIsEditing(false)}>
                   <Text className="font-title text-white text-base">CANCELAR</Text>
                 </TouchableOpacity>
-                <PrimaryButton
-                  title="SALVAR"
-                  className="flex-1 max-w-none mt-0 mb-0"
+                <ModalSaveButton
                   onPress={() => {
                     setInfo(draft);
                     onUpdate?.(draft);
