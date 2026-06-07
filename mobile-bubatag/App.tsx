@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AuthScreen from './src/screens/AuthScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterBubalinoScreen from './src/screens/RegisterBubalinoScreen';
@@ -32,7 +33,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       {isAuthenticated ? (
         activeScreen === 'home' ? (
           <HomeScreen
@@ -70,6 +71,6 @@ export default function App() {
         <AuthScreen onAuthSuccess={() => setIsAuthenticated(true)} />
       )}
       <StatusBar style="light" />
-    </>
+    </GestureHandlerRootView>
   );
 }

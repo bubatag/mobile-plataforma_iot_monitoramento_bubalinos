@@ -12,8 +12,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Svg, { Defs, Line, Path, Rect, RadialGradient, Stop } from "react-native-svg";
+import Svg, { Defs, Rect, RadialGradient, Stop } from "react-native-svg";
 import { SvgXml } from "react-native-svg";
+import { CartesianChart, Line as VictoryLine } from "victory-native";
 
 export type BubalinoStatusData = {
   id: string;
@@ -98,6 +99,10 @@ const thermometerIcon = `<?xml version="1.0" encoding="UTF-8"?>
 </svg>`;
 
 const pulseSeries = [44, 46, 43, 58, 42, 47, 48, 46, 47, 45, 47, 43, 55, 42, 45, 45, 56, 42, 47, 49, 46, 47, 46, 45, 46, 48, 45, 58, 43, 56, 43, 47, 46, 49, 48, 47, 50, 42, 47];
+const pulseChartData = pulseSeries.map((pulse, index) => ({
+  time: index + 1,
+  pulse,
+}));
 
 function getPulseColor(pulse: number) {
   if (pulse < 45 || pulse > 90) return "#FF3939";
@@ -112,37 +117,52 @@ function getTemperatureColor(temperature: number) {
 }
 
 function PulseChart({ color }: { color: string }) {
-  const path = useMemo(() => {
-    const width = 282;
-    const height = 112;
-    const min = 38;
-    const max = 62;
-    return pulseSeries
-      .map((value, index) => {
-        const x = (index / (pulseSeries.length - 1)) * width;
-        const y = height - ((value - min) / (max - min)) * height;
-        return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
-      })
-      .join(" ");
-  }, []);
+  const domain = useMemo(() => ({ x: [1, pulseSeries.length] as [number, number], y: [38, 62] as [number, number] }), []);
 
   return (
-    <Svg width="100%" height={114} viewBox="0 0 282 114" preserveAspectRatio="none">
-      <Defs>
-        <RadialGradient id="chartGlow" cx="50%" cy="50%" rx="70%" ry="90%">
-          <Stop offset="0%" stopColor="#425A63" stopOpacity={0.52} />
-          <Stop offset="100%" stopColor="#27333A" stopOpacity={0.22} />
-        </RadialGradient>
-      </Defs>
-      <Rect x={0} y={0} width={282} height={114} rx={24} fill="url(#chartGlow)" />
-      {Array.from({ length: 26 }).map((_, index) => (
-        <Line key={`v-${index}`} x1={index * 11.3} y1={0} x2={index * 11.3} y2={114} stroke="#55707A" strokeWidth={0.45} opacity={0.65} />
-      ))}
-      {Array.from({ length: 16 }).map((_, index) => (
-        <Line key={`h-${index}`} x1={0} y1={index * 7.6} x2={282} y2={index * 7.6} stroke="#55707A" strokeWidth={0.45} opacity={0.65} />
-      ))}
-      <Path d={path} stroke={color} strokeWidth={1.4} fill="none" opacity={0.58} />
-    </Svg>
+    <View className="h-[132px] overflow-hidden rounded-3xl border border-[#3A4A52] bg-[#26343B]">
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <Svg width="100%" height="100%">
+          <Defs>
+            <RadialGradient id="chartGlow" cx="50%" cy="45%" rx="76%" ry="92%">
+              <Stop offset="0%" stopColor="#425A63" stopOpacity={0.56} />
+              <Stop offset="100%" stopColor="#253139" stopOpacity={0.24} />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#chartGlow)" />
+        </Svg>
+      </View>
+      <View className="flex-1 px-1.5 py-2">
+        <CartesianChart
+          data={pulseChartData}
+          xKey="time"
+          yKeys={["pulse"]}
+          domain={domain}
+          padding={{ left: 8, right: 8, top: 14, bottom: 10 }}
+          axisOptions={{
+            lineColor: {
+              grid: { x: "#55707A8F", y: "#55707A8F" },
+              frame: "#3A4A52",
+            },
+            lineWidth: { grid: { x: 0.45, y: 0.45 }, frame: 0 },
+            tickCount: { x: 8, y: 5 },
+            labelColor: "transparent",
+          }}
+        >
+          {({ points }) => (
+            <VictoryLine
+              points={points.pulse}
+              color={color}
+              strokeWidth={2.4}
+              strokeCap="round"
+              strokeJoin="round"
+              curveType="natural"
+              opacity={0.88}
+            />
+          )}
+        </CartesianChart>
+      </View>
+    </View>
   );
 }
 
