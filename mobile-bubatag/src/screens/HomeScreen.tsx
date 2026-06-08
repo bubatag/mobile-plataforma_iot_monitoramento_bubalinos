@@ -125,6 +125,8 @@ export default function HomeScreen({
     );
   };
 
+  const markerIconSize = { width: 65, height: 49 };
+
   const handleAddMockBubalino = () => {
     const newIndex = nextMockId;
     const newStatus = statusCycle[newIndex % statusCycle.length];
@@ -214,8 +216,8 @@ export default function HomeScreen({
                   title={bubalino.tag}
                   anchor={{ x: 0.5, y: 0.5 }}
                 >
-                  <View collapsable={false} pointerEvents="none" style={{ width: 59, height: 43 }}>
-                    <MapBuffaloIcon width={59} height={43} />
+                  <View collapsable={false} pointerEvents="none" style={{ width: 40, height: 40 }}>
+                    <MapBuffaloIcon width={38} height={40} />
                   </View>
                 </Marker>
               ))}
