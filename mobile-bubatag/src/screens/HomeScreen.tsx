@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Platform, StatusBar, ScrollView } from "react-native";
 import MapView, { Marker, Polygon } from "react-native-maps";
 import { SvgXml } from "react-native-svg";
+import Animated, { FadeInDown, FadeOut, Layout } from "react-native-reanimated";
 import AddBubalinoIcon from "../../assets/adicionar-bufalo.svg";
 import MapBuffaloIcon from "../../assets/bufalo-mapa-pin.svg";
 import { BubalinoCard } from "../components/ui/BubalinoCard";
@@ -216,8 +217,8 @@ export default function HomeScreen({
                   title={bubalino.tag}
                   anchor={{ x: 0.5, y: 0.5 }}
                 >
-                  <View collapsable={false} pointerEvents="none" style={{ width: 40, height: 40 }}>
-                    <MapBuffaloIcon width={38} height={40} />
+                  <View collapsable={false} pointerEvents="none" style={{ width: markerIconSize.width, height: markerIconSize.height }}>
+                    <MapBuffaloIcon width="100%" height="100%" />
                   </View>
                 </Marker>
               ))}
@@ -249,15 +250,21 @@ export default function HomeScreen({
 
         {filteredBubalinos.length > 0 ? (
           <View>
-            {filteredBubalinos.map((item) => (
-              <BubalinoCard
+            {filteredBubalinos.map((item, index) => (
+              <Animated.View
                 key={item.id}
-                id={item.id}
-                tag={item.tag}
-                collar={item.collar}
-                status={item.status}
-                onPress={() => openBubalinoStatus(item)}
-              />
+                entering={FadeInDown.delay(index * 50)}
+                exiting={FadeOut.duration(200)}
+                layout={Layout.springify().damping(14)}
+              >
+                <BubalinoCard
+                  id={item.id}
+                  tag={item.tag}
+                  collar={item.collar}
+                  status={item.status}
+                  onPress={() => openBubalinoStatus(item)}
+                />
+              </Animated.View>
             ))}
           </View>
         ) : (

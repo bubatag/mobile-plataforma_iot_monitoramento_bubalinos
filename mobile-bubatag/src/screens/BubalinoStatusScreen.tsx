@@ -322,10 +322,12 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
           </TouchableOpacity>
         </View>
 
-        <Text className="font-title text-white text-[25px] uppercase" numberOfLines={1} adjustsFontSizeToFit>
-          STATUS DO BUBALINO {info.tag}
-        </Text>
-        <View className="h-[2px] bg-white mt-2 mb-5 -mx-5" />
+        <View>
+          <Text className="font-title text-white text-[25px] uppercase" numberOfLines={1} adjustsFontSizeToFit>
+            STATUS DO BUBALINO {info.tag}
+          </Text>
+          <View className="h-[2px] bg-white mt-2 mb-5 -mx-5" />
+        </View>
 
         {isDisconnected ? (
           <View className="bg-[#2B3940] rounded-[28px] px-5 py-6 shadow-lg border border-[#2D3B42]">
