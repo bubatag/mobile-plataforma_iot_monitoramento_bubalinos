@@ -427,7 +427,7 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
                     label="Colar"
                     value={draft.collar}
                     onChangeText={(collar) => setDraft((current) => ({ ...current, collar }))}
-                    keyboardType="number-pad"
+                    placeholder="CL-100"
                   />
                 </View>
               </View>

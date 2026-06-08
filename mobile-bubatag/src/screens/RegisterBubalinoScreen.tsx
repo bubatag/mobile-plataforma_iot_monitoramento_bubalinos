@@ -19,7 +19,7 @@ const sairIcon = `<?xml version="1.0" encoding="UTF-8"?>
 <path d="M19 4H14V2H19C20.1046 2 21 2.89543 21 4V20C21 21.1046 20.1046 22 19 22H14V20H19V4Z" fill="#06D001"/>
 </svg>`;
 
-const colarOptions = ["Colar A", "Colar B", "Colar C", "Colar D", "Colar E", "Colar F", "Colar G", "Colar H", "Colar I", "Colar J"];
+const colarOptions = ["CL-100", "CL-101", "CL-102", "CL-103", "CL-104", "CL-105", "CL-106", "CL-107", "CL-108", "CL-109"];
 
 interface RegisterBubalinoScreenProps {
   onBack: () => void;

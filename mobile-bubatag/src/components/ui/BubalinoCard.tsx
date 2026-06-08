@@ -65,7 +65,7 @@ export function BubalinoCard({ id, tag, collar, status, onPress }: BubalinoCardP
           </Text>
           <Text className="font-body text-sm text-gray-500">•</Text>
           <Text className="font-body text-sm text-gray-400">
-            Colar: <Text className="font-bold text-gray-200">#{collar}</Text>
+            Colar: <Text className="font-bold text-gray-200">{collar}</Text>
           </Text>
         </View>
       </View>

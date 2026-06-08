@@ -23,28 +23,28 @@ const initialBubalinos: BubalinoItem[] = [
   {
     id: "4",
     tag: "BC75",
-    collar: "4",
+    collar: "CL-103",
     status: "disconnected",
     coordinate: { latitude: -24.58775, longitude: -47.88855 },
   },
   {
     id: "3",
     tag: "JI44",
-    collar: "3",
+    collar: "CL-102",
     status: "location",
     coordinate: { latitude: -24.58728, longitude: -47.88792 },
   },
   {
     id: "2",
     tag: "TA19",
-    collar: "2",
+    collar: "CL-101",
     status: "alert",
     coordinate: { latitude: -24.58678, longitude: -47.88892 },
   },
   {
     id: "1",
     tag: "TE18",
-    collar: "1",
+    collar: "CL-100",
     status: "healthy",
     coordinate: { latitude: -24.58795, longitude: -47.88762 },
   },
@@ -135,7 +135,7 @@ export default function HomeScreen({
     const newBubalino: BubalinoItem = {
       id: String(newIndex),
       tag: `NEW${String(newIndex).padStart(2, "0")}`,
-      collar: String(((newIndex - 1) % 4) + 1),
+      collar: `CL-${String(99 + newIndex).padStart(3, "0")}`,
       status: newStatus,
       coordinate: {
         latitude: -24.5875 + (Math.random() - 0.5) * 0.0012,
