@@ -118,7 +118,7 @@ export default function HomeScreen({
     mapRef.current?.animateCamera(
       {
         center: farmMapCenter,
-        zoom: 16.8,
+        zoom: 17.0,
         pitch: 0,
         heading: 0,
       },
@@ -217,8 +217,8 @@ export default function HomeScreen({
                   title={bubalino.tag}
                   anchor={{ x: 0.5, y: 0.5 }}
                 >
-                  <View collapsable={false} pointerEvents="none" style={{ width: markerIconSize.width, height: markerIconSize.height }}>
-                    <MapBuffaloIcon width="100%" height="100%" />
+                  <View collapsable={false} pointerEvents="none" style={{ width: 35, height: 35 }}>
+                    <MapBuffaloIcon width={35} height={35} />
                   </View>
                 </Marker>
               ))}
