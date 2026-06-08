@@ -29,7 +29,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
   const [nome, setNome] = useState("");
   const [sexo, setSexo] = useState<"Macho" | "Fêmea" | "">("");
   const [nascimento, setNascimento] = useState("");
-  const [etiqueta, setEtiqueta] = useState("");
+  const [tag, setTag] = useState("");
   const [colar, setColar] = useState("");
   const [isCollarOpen, setIsCollarOpen] = useState(false);
 
@@ -196,10 +196,10 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
 
             <View className="flex-row gap-3">
               <TextField
-                label="Número da etiqueta"
+                label="Número da Tag"
                 placeholder="Digite aqui o número"
-                value={etiqueta}
-                onChangeText={setEtiqueta}
+                value={tag}
+                onChangeText={setTag}
                 keyboardType="numeric"
                 className="flex-1"
               />
@@ -341,7 +341,7 @@ export default function RegisterBubalinoScreen({ onBack }: RegisterBubalinoScree
                 setNome("");
                 setSexo("");
                 setNascimento("");
-                setEtiqueta("");
+                setTag("");
                 setColar("");
                 closeDropdown();
                 onBack();

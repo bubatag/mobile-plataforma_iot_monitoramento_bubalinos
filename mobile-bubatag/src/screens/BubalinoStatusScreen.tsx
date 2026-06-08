@@ -381,7 +381,7 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
           <View className="flex-row">
             <View className="flex-1 pr-4">
               <InfoBox label="Nome" value={info.name || "Sem nome registrado"} italic={!info.name} />
-              <InfoBox label="Número da etiqueta" value={info.tag} />
+              <InfoBox label="Número da Tag" value={info.tag} />
               <InfoBox label="Data Nascimento" value={info.birthDate} />
             </View>
 
@@ -417,7 +417,7 @@ export default function BubalinoStatusScreen({ bubalino, onBack, onUpdate, onDel
               <View className="flex-row gap-3">
                 <View className="flex-1">
                   <ModalField
-                    label="Etiqueta"
+                    label="Tag"
                     value={draft.tag}
                     onChangeText={(tag) => setDraft((current) => ({ ...current, tag }))}
                   />
