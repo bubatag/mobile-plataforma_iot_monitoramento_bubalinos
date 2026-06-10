@@ -32,7 +32,7 @@ const initialBubalinos: BubalinoItem[] = [
     tag: "JI44",
     collar: "CL-102",
     status: "location",
-    coordinate: { latitude: -24.58728, longitude: -47.88792 },
+    coordinate: { latitude: -24.586860, longitude: -47.886931 },
   },
   {
     id: "2",
