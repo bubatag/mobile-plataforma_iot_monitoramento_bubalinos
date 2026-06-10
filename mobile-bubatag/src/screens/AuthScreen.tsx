@@ -9,7 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Svg, Defs, RadialGradient, Stop, Rect, SvgXml } from "react-native-svg";
+import {
+  Svg,
+  Defs,
+  RadialGradient,
+  Stop,
+  Rect,
+  SvgXml,
+} from "react-native-svg";
 import TextField from "../components/ui/TextField";
 import { PrimaryButton } from "../components/ui/PrimaryButton";
 
@@ -62,7 +69,7 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const loginPasswordRef = useRef<TextInput>(null);
 
   // Register form states
-  const [registerName, setRegisterName] = useState("");
+  const [registerCCIR, setRegisterCCIR] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const registerEmailRef = useRef<TextInput>(null);
@@ -85,17 +92,57 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   });
 
   const handleLogin = () => {
-    console.log("Login realizado", { email: loginEmail, password: loginPassword });
+    console.log("Login realizado", {
+      email: loginEmail,
+      password: loginPassword,
+    });
     onAuthSuccess();
   };
 
   const handleRegister = () => {
     console.log("Cadastro realizado", {
-      name: registerName,
+      name: registerCCIR,
       email: registerEmail,
       password: registerPassword,
     });
     onAuthSuccess();
+  };
+
+  const handleCCIRChange = (text: string) => {
+    // 1. Remove tudo o que não for número (letras, símbolos, etc.)
+    let numericText = text.replace(/\D/g, "");
+
+    // 2. Limita a quantidade máxima de números para 13 (3+3+3+3+1)
+    numericText = numericText.substring(0, 13);
+
+    // 3. Aplica a máscara AAA.BBB.CCC.DDD-E progressivamente
+    let formattedText = numericText;
+
+    if (numericText.length > 12) {
+      // Para 13 dígitos: AAA.BBB.CCC.DDD-E
+      formattedText = numericText.replace(
+        /^(\d{3})(\d{3})(\d{3})(\d{3})(\d{1})/,
+        "$1.$2.$3.$4-$5",
+      );
+    } else if (numericText.length > 9) {
+      // Para 10 a 12 dígitos: AAA.BBB.CCC.DDD
+      formattedText = numericText.replace(
+        /^(\d{3})(\d{3})(\d{3})(\d{1,3})/,
+        "$1.$2.$3.$4",
+      );
+    } else if (numericText.length > 6) {
+      // Para 7 a 9 dígitos: AAA.BBB.CCC
+      formattedText = numericText.replace(
+        /^(\d{3})(\d{3})(\d{1,3})/,
+        "$1.$2.$3",
+      );
+    } else if (numericText.length > 3) {
+      // Para 4 a 6 dígitos: AAA.BBB
+      formattedText = numericText.replace(/^(\d{3})(\d{1,3})/, "$1.$2");
+    }
+
+    // 4. Atualiza o estado com o valor já mascarado
+    setRegisterCCIR(formattedText);
   };
 
   return (
@@ -107,7 +154,13 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <Defs>
-          <RadialGradient id="backgroundGradient" cx="50%" cy="50%" rx="70%" ry="70%">
+          <RadialGradient
+            id="backgroundGradient"
+            cx="50%"
+            cy="50%"
+            rx="70%"
+            ry="70%"
+          >
             <Stop offset="0%" stopColor="#3c505a" />
             <Stop offset="50%" stopColor="#374b55" />
             <Stop offset="100%" stopColor="#2c383f" />
@@ -157,7 +210,12 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
       >
         {/* LOGIN FORM */}
         <KeyboardAvoidingView
-          style={{ width: screenWidth, flex: 1, justifyContent: "center", paddingHorizontal: 32 }}
+          style={{
+            width: screenWidth,
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: 32,
+          }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <Text className="font-title text-white text-5xl uppercase mb-12 tracking-wide text-center">
@@ -185,31 +243,35 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
             onChangeText={setLoginPassword}
           />
 
-          <PrimaryButton title="LOGAR" activeOpacity={0.8} onPress={handleLogin} />
+          <PrimaryButton
+            title="LOGAR"
+            activeOpacity={0.8}
+            onPress={handleLogin}
+          />
 
-          <TouchableOpacity className="w-full items-center" onPress={handleToggleForm}>
-            <Text className="font-body text-white text-base underline">Não está cadastrado?</Text>
+          <TouchableOpacity
+            className="w-full items-center"
+            onPress={handleToggleForm}
+          >
+            <Text className="font-body text-white text-base underline">
+              Não está cadastrado?
+            </Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
 
         {/* REGISTER FORM */}
         <KeyboardAvoidingView
-          style={{ width: screenWidth, flex: 1, justifyContent: "center", paddingHorizontal: 32 }}
+          style={{
+            width: screenWidth,
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: 32,
+          }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <Text className="font-title text-white text-5xl uppercase mb-12 tracking-wide text-center">
             CADASTRE-SE
           </Text>
-
-          <TextField
-            label="Nome"
-            placeholder="Digite aqui seu nome"
-            autoCapitalize="words"
-            value={registerName}
-            onChangeText={setRegisterName}
-            returnKeyType="next"
-            onSubmitEditing={() => registerEmailRef.current?.focus()}
-          />
 
           <TextField
             ref={registerEmailRef}
@@ -233,10 +295,31 @@ export default function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
             onChangeText={setRegisterPassword}
           />
 
-          <PrimaryButton title="CADASTRAR" activeOpacity={0.8} onPress={handleRegister} />
+          <TextField
+            label="CCIR"
+            placeholder="Digite aqui seu CCIR"
+            autoCapitalize="none"
+            value={registerCCIR}
+            onChangeText={handleCCIRChange}
+            keyboardType="numeric"
+            maxLength={17}
+            returnKeyType="next"
+            onSubmitEditing={() => registerEmailRef.current?.focus()}
+          />
 
-          <TouchableOpacity className="w-full items-center" onPress={handleToggleForm}>
-            <Text className="font-body text-white text-base underline">Já está cadastrado?</Text>
+          <PrimaryButton
+            title="CADASTRAR"
+            activeOpacity={0.8}
+            onPress={handleRegister}
+          />
+
+          <TouchableOpacity
+            className="w-full items-center"
+            onPress={handleToggleForm}
+          >
+            <Text className="font-body text-white text-base underline">
+              Já está cadastrado?
+            </Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </Animated.View>
